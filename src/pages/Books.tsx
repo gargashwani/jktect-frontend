@@ -3,6 +3,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../lib/api';
 import { API_ENDPOINTS } from '../config/api';
 import type { Book, Review } from '../types';
+import LoadingSpinner from '../components/LoadingSpinner';
+import { useToast } from '../contexts/ToastContext';
 import './Books.css';
 
 const Books: React.FC = () => {
@@ -10,6 +12,7 @@ const Books: React.FC = () => {
   const [showReviewModal, setShowReviewModal] = useState<number | null>(null);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const queryClient = useQueryClient();
+  const { showSuccess, showError } = useToast();
 
   const { data: books, isLoading } = useQuery<Book[]>({
     queryKey: ['books'],
@@ -27,6 +30,11 @@ const Books: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['books'] });
       setShowAddModal(false);
+      showSuccess('Book added successfully!');
+    },
+    onError: (error: any) => {
+      const errorMessage = error.response?.data?.detail || 'Failed to add book';
+      showError(errorMessage);
     },
   });
 
@@ -36,6 +44,11 @@ const Books: React.FC = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['books'] });
+      showSuccess('Book deleted successfully!');
+    },
+    onError: (error: any) => {
+      const errorMessage = error.response?.data?.detail || 'Failed to delete book';
+      showError(errorMessage);
     },
   });
 
@@ -48,7 +61,7 @@ const Books: React.FC = () => {
     
     // Validate year before sending
     if (isNaN(yearPublishedInt) || yearPublishedInt < 1000 || yearPublishedInt > 2100) {
-      alert('Year published must be between 1000 and 2100');
+      showError('Year published must be between 1000 and 2100');
       return;
     }
     
@@ -61,7 +74,7 @@ const Books: React.FC = () => {
     });
   };
 
-  if (isLoading) return <div className="loading">Loading books...</div>;
+  if (isLoading) return <LoadingSpinner message="Loading books..." />;
 
   return (
     <div className="books-page">

@@ -3,11 +3,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../lib/api';
 import { API_ENDPOINTS } from '../config/api';
 import type { Document } from '../types';
+import LoadingSpinner from '../components/LoadingSpinner';
+import { useToast } from '../contexts/ToastContext';
 import './Documents.css';
 
 const Documents: React.FC = () => {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const queryClient = useQueryClient();
+  const { showSuccess, showError } = useToast();
 
   const { data: documents, isLoading } = useQuery<Document[]>({
     queryKey: ['documents'],
@@ -31,10 +34,11 @@ const Documents: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['documents'] });
       setShowUploadModal(false);
+      showSuccess('Document uploaded successfully!');
     },
     onError: (error: any) => {
       const errorMessage = error.response?.data?.detail || 'Failed to upload document';
-      alert(errorMessage);
+      showError(errorMessage);
     },
   });
 
@@ -46,6 +50,11 @@ const Documents: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['documents'] });
       queryClient.invalidateQueries({ queryKey: ['ingestions'] });
+      showSuccess('Document ingestion started!');
+    },
+    onError: (error: any) => {
+      const errorMessage = error.response?.data?.detail || 'Failed to start ingestion';
+      showError(errorMessage);
     },
   });
 
@@ -55,6 +64,11 @@ const Documents: React.FC = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['documents'] });
+      showSuccess('Document deleted successfully!');
+    },
+    onError: (error: any) => {
+      const errorMessage = error.response?.data?.detail || 'Failed to delete document';
+      showError(errorMessage);
     },
   });
 
@@ -71,7 +85,12 @@ const Documents: React.FC = () => {
     // Validate file extension - only .txt files allowed
     const fileName = file.name.toLowerCase();
     if (!fileName.endsWith('.txt')) {
-      alert('Only .txt files are allowed. Please select a text file.');
+      showError('Only .txt files are allowed. Please select a text file.');
+      return;
+    }
+    
+    if (!file) {
+      showError('Please select a file to upload');
       return;
     }
     
@@ -91,7 +110,7 @@ const Documents: React.FC = () => {
     }
   };
 
-  if (isLoading) return <div className="loading">Loading documents...</div>;
+  if (isLoading) return <LoadingSpinner message="Loading documents..." />;
 
   return (
     <div className="documents-page">
