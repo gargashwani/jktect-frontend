@@ -1,8 +1,4 @@
-/**
- * Toast Context for Global Notifications
- */
-
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState } from 'react';
 import Toast from '../components/Toast';
 import type { ToastType } from '../components/Toast';
 
@@ -12,7 +8,7 @@ interface ToastItem {
   type: ToastType;
 }
 
-interface ToastContextType {
+interface ContextValue {
   showToast: (message: string, type: ToastType) => void;
   showSuccess: (message: string) => void;
   showError: (message: string) => void;
@@ -20,7 +16,7 @@ interface ToastContextType {
   showWarning: (message: string) => void;
 }
 
-const ToastContext = createContext<ToastContextType | undefined>(undefined);
+const ToastContext = createContext<ContextValue | undefined>(undefined);
 
 export const useToast = () => {
   const context = useContext(ToastContext);
@@ -30,22 +26,22 @@ export const useToast = () => {
   return context;
 };
 
-export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
-  const removeToast = useCallback((id: string) => {
-    setToasts((prev) => prev.filter((toast) => toast.id !== id));
-  }, []);
+  const removeToast = (id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
 
-  const showToast = useCallback((message: string, type: ToastType) => {
+  const showToast = (message: string, type: ToastType) => {
     const id = Math.random().toString(36).substr(2, 9);
     setToasts((prev) => [...prev, { id, message, type }]);
-  }, []);
+  };
 
-  const showSuccess = useCallback((message: string) => showToast(message, 'success'), [showToast]);
-  const showError = useCallback((message: string) => showToast(message, 'error'), [showToast]);
-  const showInfo = useCallback((message: string) => showToast(message, 'info'), [showToast]);
-  const showWarning = useCallback((message: string) => showToast(message, 'warning'), [showToast]);
+  const showSuccess = (message: string) => showToast(message, 'success');
+  const showError = (message: string) => showToast(message, 'error');
+  const showInfo = (message: string) => showToast(message, 'info');
+  const showWarning = (message: string) => showToast(message, 'warning');
 
   return (
     <ToastContext.Provider value={{ showToast, showSuccess, showError, showInfo, showWarning }}>

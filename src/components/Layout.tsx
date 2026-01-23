@@ -1,18 +1,13 @@
-/**
- * Layout Component
- */
-
 import React from 'react';
-import type { ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import './Layout.css';
 
-interface LayoutProps {
-  children: ReactNode;
+interface Props {
+  children: React.ReactNode;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout = ({ children }: Props) => {
   const { user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
 

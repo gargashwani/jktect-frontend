@@ -7,7 +7,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import { useToast } from '../contexts/ToastContext';
 import './Books.css';
 
-const Books: React.FC = () => {
+const Books = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState<number | null>(null);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
@@ -17,15 +17,15 @@ const Books: React.FC = () => {
   const { data: books, isLoading } = useQuery<Book[]>({
     queryKey: ['books'],
     queryFn: async () => {
-      const response = await apiClient.get(API_ENDPOINTS.BOOKS);
-      return response.data;
+      const res = await apiClient.get(API_ENDPOINTS.BOOKS);
+      return res.data;
     },
   });
 
   const createBookMutation = useMutation({
     mutationFn: async (bookData: Partial<Book>) => {
-      const response = await apiClient.post(API_ENDPOINTS.BOOKS, bookData);
-      return response.data;
+      const res = await apiClient.post(API_ENDPOINTS.BOOKS, bookData);
+      return res.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['books'] });

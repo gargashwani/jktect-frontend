@@ -1,8 +1,3 @@
-/**
- * Main App Component
- */
-
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './contexts/AuthContext';
@@ -28,9 +23,7 @@ const queryClient = new QueryClient({
   },
 });
 
-const App: React.FC = () => {
-  console.log('App component rendering...');
-  
+const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary>

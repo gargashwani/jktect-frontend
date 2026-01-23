@@ -7,7 +7,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import { useToast } from '../contexts/ToastContext';
 import './Documents.css';
 
-const Documents: React.FC = () => {
+const Documents = () => {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const queryClient = useQueryClient();
   const { showSuccess, showError } = useToast();
@@ -15,8 +15,8 @@ const Documents: React.FC = () => {
   const { data: documents, isLoading } = useQuery<Document[]>({
     queryKey: ['documents'],
     queryFn: async () => {
-      const response = await apiClient.get(API_ENDPOINTS.DOCUMENTS);
-      return response.data;
+      const res = await apiClient.get(API_ENDPOINTS.DOCUMENTS);
+      return res.data;
     },
   });
 
@@ -24,12 +24,12 @@ const Documents: React.FC = () => {
     mutationFn: async (file: File) => {
       const formData = new FormData();
       formData.append('file', file);
-      const response = await apiClient.post(API_ENDPOINTS.DOCUMENTS, formData, {
+      const res = await apiClient.post(API_ENDPOINTS.DOCUMENTS, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      return response.data;
+      return res.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['documents'] });
@@ -44,8 +44,8 @@ const Documents: React.FC = () => {
 
   const ingestMutation = useMutation({
     mutationFn: async (documentId: number) => {
-      const response = await apiClient.post(API_ENDPOINTS.DOCUMENT_INGEST(documentId));
-      return response.data;
+      const res = await apiClient.post(API_ENDPOINTS.DOCUMENT_INGEST(documentId));
+      return res.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['documents'] });

@@ -1,36 +1,31 @@
-/**
- * Toast Notification Component
- */
-
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import './Toast.css';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
 
-interface ToastProps {
+interface Props {
   message: string;
   type: ToastType;
   onClose: () => void;
   duration?: number;
 }
 
-const Toast: React.FC<ToastProps> = ({ message, type, onClose, duration = 3000 }) => {
+const Toast = ({ message, type, onClose, duration = 3000 }: Props) => {
   useEffect(() => {
-    const timer = setTimeout(() => {
-      onClose();
-    }, duration);
-
+    const timer = setTimeout(onClose, duration);
     return () => clearTimeout(timer);
   }, [duration, onClose]);
 
+  const getIcon = () => {
+    if (type === 'success') return '✓';
+    if (type === 'error') return '✕';
+    if (type === 'warning') return '⚠';
+    return 'ℹ';
+  };
+
   return (
     <div className={`toast toast-${type}`} onClick={onClose}>
-      <span className="toast-icon">
-        {type === 'success' && '✓'}
-        {type === 'error' && '✕'}
-        {type === 'warning' && '⚠'}
-        {type === 'info' && 'ℹ'}
-      </span>
+      <span className="toast-icon">{getIcon()}</span>
       <span className="toast-message">{message}</span>
       <button className="toast-close" onClick={onClose}>×</button>
     </div>

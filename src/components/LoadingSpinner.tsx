@@ -1,19 +1,11 @@
-/**
- * Loading Spinner Component
- */
-
-import React from 'react';
 import './LoadingSpinner.css';
 
-interface LoadingSpinnerProps {
+interface Props {
   size?: 'small' | 'medium' | 'large';
   message?: string;
 }
 
-const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ 
-  size = 'medium', 
-  message 
-}) => {
+const LoadingSpinner = ({ size = 'medium', message }: Props) => {
   return (
     <div className={`loading-spinner-container ${size}`}>
       <div className="spinner"></div>

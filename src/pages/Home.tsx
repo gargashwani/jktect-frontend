@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../contexts/AuthContext';
@@ -6,25 +5,26 @@ import apiClient from '../lib/api';
 import { API_ENDPOINTS } from '../config/api';
 import './Home.css';
 
-const Home: React.FC = () => {
+const Home = () => {
   const { user, isAdmin } = useAuth();
   
-  // Fetch stats for dashboard
   const { data: books } = useQuery({
     queryKey: ['books'],
     queryFn: async () => {
-      const response = await apiClient.get(API_ENDPOINTS.BOOKS);
-      return response.data;
+      const res = await apiClient.get(API_ENDPOINTS.BOOKS);
+      return res.data;
     },
   });
   
   const { data: documents } = useQuery({
     queryKey: ['documents'],
     queryFn: async () => {
-      const response = await apiClient.get(API_ENDPOINTS.DOCUMENTS);
-      return response.data;
+      const res = await apiClient.get(API_ENDPOINTS.DOCUMENTS);
+      return res.data;
     },
   });
+
+  const ingestedCount = documents?.filter((d: any) => d.ingestion_status === 'completed').length || 0;
 
   return (
     <div className="home-page">
@@ -44,9 +44,7 @@ const Home: React.FC = () => {
               <span className="stat-label">Documents</span>
             </div>
             <div className="stat-item">
-              <span className="stat-number">
-                {documents?.filter((d: any) => d.ingestion_status === 'completed').length || 0}
-              </span>
+              <span className="stat-number">{ingestedCount}</span>
               <span className="stat-label">Ingested</span>
             </div>
           </div>
